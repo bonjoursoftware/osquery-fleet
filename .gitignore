@@ -1,0 +1,11 @@
+.idea
+.vagrant
+
+cert/*
+!cert/README.md
+
+mysqldata/*
+
+*.iml
+*.ipr
+*.log

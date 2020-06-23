@@ -1,0 +1,42 @@
+version: '3'
+services:
+  mysql:
+    image: mysql
+    volumes:
+      - ./mysqldata:/var/lib/mysql
+    command: mysqld --datadir=/var/lib/mysql --slow_query_log=1 --log_output=TABLE --log-queries-not-using-indexes --event-scheduler=ON
+    environment:
+      MYSQL_ROOT_PASSWORD:
+      MYSQL_DATABASE: kolide
+      MYSQL_USER: kolide
+      MYSQL_PASSWORD:
+    ports:
+      - "3306:3306"
+
+  redis:
+    image: redis
+    ports:
+      - "6379:6379"
+
+  fleet:
+    depends_on:
+      - mysql
+      - redis
+    image: kolide/fleet
+    volumes:
+      - ./cert:/cert
+    command: fleet prepare db
+    expose:
+      - "8080"
+    ports:
+      - "8080:8080"
+    environment:
+      KOLIDE_MYSQL_ADDRESS: 'mysql:3306'
+      KOLIDE_MYSQL_DATABASE: kolide
+      KOLIDE_MYSQL_USERNAME: kolide
+      KOLIDE_MYSQL_PASSWORD: $MYSQL_PASSWORD
+      KOLIDE_REDIS_ADDRESS: 'redis:6379'
+      KOLIDE_SERVER_CERT: /cert/kolide.cert
+      KOLIDE_SERVER_KEY: /cert/kolide.key
+      KOLIDE_LOGGING_JSON: 'true'
+      KOLIDE_AUTH_JWT_KEY:

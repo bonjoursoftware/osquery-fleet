@@ -1,0 +1,1 @@
+Create a certificate for the Fleet server and copy the cert and key files in this directory (see root README -> Run Kolide Fleet locally -> step 1)
